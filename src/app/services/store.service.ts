@@ -9,9 +9,14 @@ export class StoreService {
   private temperature = new BehaviorSubject<number>(35);
   temperature$: Observable<number> = this.temperature.asObservable();
 
-  private chaudiereRun = new BehaviorSubject<boolean>(false);
-  chaudiereRun$: Observable<boolean> = this.chaudiereRun.asObservable();
 
+  private requestChaudiere = new BehaviorSubject<boolean>(false);
+  requestChaudiere$: Observable<boolean> = this.requestChaudiere.asObservable();
+
+  private responseStartChaudiere = new BehaviorSubject<boolean>(false);
+  responseStartChaudiere$: Observable<boolean> = this.responseStartChaudiere.asObservable();
+
+  
   private disjoncteur = new BehaviorSubject<boolean>(true);
   disjoncteur$: Observable<boolean> = this.disjoncteur.asObservable();
 
@@ -34,6 +39,10 @@ export class StoreService {
 
   getTemperatureValue() {
     return this.temperature.value;
+  }
+
+  createResquestChaudiere(state: boolean) {
+    this.requestChaudiere.next(state);
   }
 
   setDisjoncteur(state: boolean) {

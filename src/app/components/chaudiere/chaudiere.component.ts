@@ -9,10 +9,10 @@ import { StoreService } from 'src/app/services/store.service';
 })
 export class ChaudiereComponent implements OnInit, OnDestroy {
   
-  runMessage$!: Observable<boolean>;
+  requestSub!: Subscription;
 
   runState!: Observable<number>;
-  runSubscription!: Subscription;
+  runStateSub!: Subscription;
 
   isRunning: boolean = false;
 
@@ -23,25 +23,60 @@ export class ChaudiereComponent implements OnInit, OnDestroy {
       tap(() => this.store.setTemperature(this.store.getTemperatureValue() + 1))
     );
 
-    this.runMessage$ = this.store.chaudiereRun$.pipe(
+    this.requestSub = this.store.requestChaudiere$.pipe(
       tap(value => {
         console.log(`chaudiere run : ${value}`);
-        if (value) this.start();
+        //if (value) this.start();
+      }),
+      tap(value => {
+        if (!value) {
+          this.stop();
+          return;
+        }
+
+        const timer = interval(1000).pipe(
+          tap(s => {
+            console.log(s);
+            const itWorks = this.getRandomSeconds();
+            if (s == itWorks) {
+              this.start();
+              timer.unsubscribe();
+            }
+          })
+        ).subscribe();
       })
-    );
+    ).subscribe();
   }
 
-  start() {
-    this.runSubscription = this.runState.subscribe();
+  private start() {
+    this.runStateSub = this.runState.subscribe();
     this.isRunning = true;
+    console.log('start !');
   }
 
-  stop() {
-    this.runSubscription.unsubscribe();
+  private stop() {
+    if (this.runStateSub == null) return;
+    this.runStateSub.unsubscribe();
     this.isRunning = false;
+    console.log('stop !');
   }
+
+  onClickStart() {
+    this.store.createResquestChaudiere(true);
+  }
+
+  onClickStop() {
+    this.store.createResquestChaudiere(false);
+  }
+
+
+  private getRandomSeconds() {
+    return Math.floor(Math.random() * 10);
+  }
+
 
   ngOnDestroy(): void {
-      this.runSubscription.unsubscribe();
+    this.runStateSub.unsubscribe();
+    this.requestSub.unsubscribe();
   }
 }

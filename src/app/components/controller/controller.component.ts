@@ -23,10 +23,12 @@ export class ControllerComponent implements OnInit, OnDestroy {
   constructor(private store: StoreService) { }
   
   ngOnInit(): void {
+    // get temperature value
     this.temperatureSub = this.store.temperature$.pipe(
       tap(value => this.temperature = value)
     ).subscribe();
 
+    // get thermostat value
     this.thermostatValueSub = this.store.thermostatValue$.pipe(
       tap(value => {
         this.thermostatValue = value;
@@ -34,6 +36,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
 
+    // get if thermostat is activated
     this.thermostatActivatedSub = this.store.thermostatActivated$.pipe(
       tap(value => {
         this.thermostatActivated = value;
@@ -43,11 +46,25 @@ export class ControllerComponent implements OnInit, OnDestroy {
   }
 
 
+  // start or stop the chaudiere
   private setChaudiereState(state: boolean) {
     if (state) {
       console.log(`la chaudière doit être activée avec pour objectif ${this.thermostatValue}`);
     } else {
       console.log(`la chaudière doit être désactivée`);
+    }
+  }
+
+  private handleChaudiere() {
+    if (!this.thermostatActivated) return;
+
+    const target = this.thermostatValue;
+    const current = this.temperature;
+
+    if (current < target) {
+      //this.store.setChaudiereRun(true);
+    } else {
+      //this.store.setChaudiereRun(false);
     }
   }
 
@@ -57,5 +74,4 @@ export class ControllerComponent implements OnInit, OnDestroy {
     this.thermostatValueSub.unsubscribe();
     this.thermostatActivatedSub.unsubscribe();
   }
-
 }
