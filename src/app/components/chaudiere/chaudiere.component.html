@@ -1,1 +1,3 @@
-<p>chaudiere works!</p>
+<h3>Chaudière</h3>
+<button *ngIf="!isRunning" (click)="start()">Démarrer</button>
+<button *ngIf="isRunning" (click)="stop()">Arrêter</button>
