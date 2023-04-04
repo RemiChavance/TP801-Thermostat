@@ -7,6 +7,7 @@ import { ThermostatComponent } from './components/thermostat/thermostat.componen
 import { ControllerComponent } from './components/controller/controller.component';
 import { ChaudiereComponent } from './components/chaudiere/chaudiere.component';
 import { DisjoncteurComponent } from './components/disjoncteur/disjoncteur.component';
+import { ThermometreComponent } from './components/thermometre/thermometre.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { DisjoncteurComponent } from './components/disjoncteur/disjoncteur.compo
     ThermostatComponent,
     ControllerComponent,
     ChaudiereComponent,
-    DisjoncteurComponent
+    DisjoncteurComponent,
+    ThermometreComponent
   ],
   imports: [
     BrowserModule,
