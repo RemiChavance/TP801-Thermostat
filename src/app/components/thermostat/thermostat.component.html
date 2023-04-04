@@ -1,1 +1,9 @@
-<p>thermostat works!</p>
+<div>
+    <h3>Thermostat</h3>
+    <button *ngIf="!isActivated" (click)="onActivate()">Activer</button>
+    <button *ngIf="isActivated" (click)="onDeactivate()">Désactiver</button>
+    <div>
+        <input [disabled]="!isActivated" [(ngModel)]="value" (change)="onChange()" type="range" min="5" max="35" step="1"/>
+        <span>{{ value }}</span>
+    </div>
+</div>

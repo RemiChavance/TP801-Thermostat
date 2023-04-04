@@ -15,9 +15,15 @@ export class StoreService {
   private disjoncteur = new BehaviorSubject<boolean>(true);
   disjoncteur$: Observable<boolean> = this.disjoncteur.asObservable();
 
+  private thermostatActivated = new BehaviorSubject<boolean>(false);
+  thermostatActivated$: Observable<boolean> = this.thermostatActivated.asObservable();
+
+  private thermostatValue = new BehaviorSubject<number>(20);
+  thermostatValue$: Observable<number> = this.thermostatValue.asObservable();
+
 
   constructor() {
-    interval(1000).pipe(
+    interval(5000).pipe(
       tap(() => this.setTemperature(this.temperature.getValue() - 1))
     ).subscribe();
   }
@@ -32,5 +38,13 @@ export class StoreService {
 
   setDisjoncteur(state: boolean) {
     this.disjoncteur.next(state);
+  }
+
+  setThermostatActivated(state: boolean) {
+    this.thermostatActivated.next(state);
+  }
+
+  setThermostatValue(value: number) {
+    this.thermostatValue.next(value);
   }
 }
