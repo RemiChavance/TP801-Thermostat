@@ -12,8 +12,12 @@ export class StoreService {
   private chaudiereRun = new BehaviorSubject<boolean>(false);
   chaudiereRun$: Observable<boolean> = this.chaudiereRun.asObservable();
 
+  private disjoncteur = new BehaviorSubject<boolean>(true);
+  disjoncteur$: Observable<boolean> = this.disjoncteur.asObservable();
+
+
   constructor() {
-    interval(5000).pipe(
+    interval(1000).pipe(
       tap(() => this.setTemperature(this.temperature.getValue() - 1))
     ).subscribe();
   }
@@ -24,5 +28,9 @@ export class StoreService {
 
   getTemperatureValue() {
     return this.temperature.value;
+  }
+
+  setDisjoncteur(state: boolean) {
+    this.disjoncteur.next(state);
   }
 }

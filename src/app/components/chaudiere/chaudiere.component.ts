@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription, interval, tap } from 'rxjs';
 import { StoreService } from 'src/app/services/store.service';
 
@@ -7,7 +7,7 @@ import { StoreService } from 'src/app/services/store.service';
   templateUrl: './chaudiere.component.html',
   styleUrls: ['./chaudiere.component.scss']
 })
-export class ChaudiereComponent implements OnInit {
+export class ChaudiereComponent implements OnInit, OnDestroy {
   
   runMessage$!: Observable<boolean>;
 
@@ -39,5 +39,9 @@ export class ChaudiereComponent implements OnInit {
   stop() {
     this.runSubscription.unsubscribe();
     this.isRunning = false;
+  }
+
+  ngOnDestroy(): void {
+      this.runSubscription.unsubscribe();
   }
 }

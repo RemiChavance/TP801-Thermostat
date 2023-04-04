@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription, tap } from 'rxjs';
+import { StoreService } from 'src/app/services/store.service';
 
 
 @Component({
@@ -6,13 +8,25 @@ import { Component } from '@angular/core';
   templateUrl: './disjoncteur.component.html',
   styleUrls: ['./disjoncteur.component.scss']
 })
-export class DisjoncteurComponent {
-  isChecked = false;
+export class DisjoncteurComponent implements OnInit, OnDestroy {
+  
+  isChecked!: boolean;
+  subscription!: Subscription;
 
+  constructor(private store: StoreService) { }
+
+  ngOnInit(): void {
+    this.subscription = this.store.disjoncteur$.pipe(
+      tap(value => this.isChecked = value)
+    ).subscribe();
+  }
 
   onCheckboxChange() {
-    const value = this.isChecked ? "ON" : "OFF";
-    console.log("La case à cocher est : " + value);
-}
+    this.store.setDisjoncteur(this.isChecked);
+    console.log(`Disjoncteur state : ${this.isChecked}`);
+  }
 
+  ngOnDestroy(): void {
+      this.subscription.unsubscribe();
+  }
 }
