@@ -27,7 +27,7 @@ export class ThermostatComponent implements OnInit, OnDestroy {
   }
 
   onDeactivate() {
-    this.store.setThermostatActivated(true);
+    this.store.setThermostatActivated(false);
   }
 
   onChange() {
