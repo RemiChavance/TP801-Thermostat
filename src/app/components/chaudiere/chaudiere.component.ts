@@ -16,6 +16,11 @@ export class ChaudiereComponent implements OnInit, OnDestroy {
 
   isRunning: boolean = false;
 
+  shouldRespond: boolean = true;
+
+  disjoncteurState!: boolean;
+  disjoncteurSub!: Subscription;
+
   constructor(private store: StoreService) { }
 
   ngOnInit(): void {
@@ -25,13 +30,22 @@ export class ChaudiereComponent implements OnInit, OnDestroy {
 
     this.requestSub = this.store.requestChaudiere$.pipe(
       tap(value => {
+        if (!this.disjoncteurState) return;
+
         console.log(`request received by the chaudiere : ${value ? 'ENABLE' : 'DISABLE'}`);
         if (!value) {
           this.stop();
           return;
         }
-        this.receiveStartOrder();        
+        if (this.shouldRespond) {
+          this.receiveStartOrder(); 
+        }       
       })
+    ).subscribe();
+
+
+    this.disjoncteurSub = this.store.disjoncteur$.pipe(
+      tap(value => this.disjoncteurState = value)
     ).subscribe();
   }
 
@@ -81,5 +95,6 @@ export class ChaudiereComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.runStateSub.unsubscribe();
     this.requestSub.unsubscribe();
+    this.disjoncteurSub.unsubscribe();
   }
 }

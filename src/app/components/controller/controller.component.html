@@ -6,4 +6,9 @@
     <p>{{ waitingTimer }} secondes</p>
 </div>
 
+<div *ngIf="isLock">
+    <p>Verrouillé, merci de patienter et de remettre en place de disjoncteur ...</p>
+    <p>{{ waitingLockTimer }} secondes</p>
+</div>
+
 <p *ngIf="!waitingForResponse">Retour de la chaudiere : {{ responseChaudiere }}</p>

@@ -27,6 +27,10 @@ export class StoreService {
   thermostatValue$: Observable<number> = this.thermostatValue.asObservable();
 
 
+  private lockThermostat = new BehaviorSubject<boolean>(false);
+  lockThermostat$: Observable<boolean> = this.lockThermostat.asObservable();
+
+
   constructor() {
     interval(5000).pipe(
       tap(() => this.setTemperature(this.temperature.getValue() - 1))
@@ -60,5 +64,9 @@ export class StoreService {
 
   setResponseChaudiere(state: boolean) {
     this.responseStartChaudiere.next(state);
+  }
+
+  setLockThermostat(state: boolean) {
+    this.lockThermostat.next(state);
   }
 }

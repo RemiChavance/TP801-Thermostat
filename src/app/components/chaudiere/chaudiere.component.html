@@ -1,4 +1,9 @@
 <h3>Chaudière</h3>
+
+
+<input type="checkbox" id="shouldRespond" name="subscribe" value="newsletter" [(ngModel)]="shouldRespond">
+<label for="shouldRespond">Devrait répondre ?</label>
+
 <p>Etat : {{ isRunning ? 'Activée' : 'Désactivée' }}</p>
 
 <!--

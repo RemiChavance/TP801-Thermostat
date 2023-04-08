@@ -25,10 +25,23 @@ export class ControllerComponent implements OnInit, OnDestroy {
   processingOrder: boolean = false;
   order : 'ENABLE' | 'DISABLE' | 'NONE' = 'NONE';
 
+  timerForWaitingChaudiereResponse!: Subscription;
+
   // UI
   waitingForResponse: boolean = false;
   waitingTimer: number = 0;
   responseChaudiere: string = 'Désactivée';
+  waitingLockTimer: number = 10;
+
+
+  // not responding
+  timerNoResponseInSeconds:number = 10;
+  isLock: boolean = false;
+  lockSub!: Subscription;
+  timerLockFinish: boolean = false;
+
+  disjoncteurState!: boolean;
+  disjoncteurSub!: Subscription;
 
   constructor(private store: StoreService) { }
   
@@ -57,6 +70,18 @@ export class ControllerComponent implements OnInit, OnDestroy {
 
     // get if chaudiere started
     this.responseChaudiere$ = this.store.responseStartChaudiere$;
+
+    // lock
+    this.lockSub = this.store.lockThermostat$.pipe(
+      tap(value => this.isLock = value)
+    ).subscribe();
+
+    this.disjoncteurSub = this.store.disjoncteur$.pipe(
+      tap(value => {
+        this.disjoncteurState = value;
+        this.tryToUnlock();
+      })
+    ).subscribe();
   }
 
 
@@ -79,7 +104,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
   }
 
   private handleOrder() {
-    if (this.processingOrder || this.order == 'NONE') return;
+    if (this.processingOrder || this.order == 'NONE' || this.isLock) return;
 
     // enable the chaudiere
     if (this.order == 'ENABLE' && this.chaudiereState == 'DISABLE') {
@@ -87,16 +112,18 @@ export class ControllerComponent implements OnInit, OnDestroy {
       console.log(`processing order from controller : ${this.order}`);
 
 
-      const timer = interval(1000).pipe(
+      this.timerForWaitingChaudiereResponse = interval(1000).pipe(
         tap(s => {
           console.log(`controller waiting : ${s}`);
           this.waitingTimer = s;
           if (s == 10) {
-            timer.unsubscribe();
+            this.timerForWaitingChaudiereResponse.unsubscribe();
+            this.responseChaudiereSub.unsubscribe();
             this.processingOrder = false;
             console.log('the chaudiere did not respond');
             this.responseChaudiere = `La chaudière n'a pas répondu`;
             this.waitingForResponse = false;
+            this.lock();
           }
         })
       ).subscribe();
@@ -119,7 +146,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
             this.responseChaudiere = `La chaudière est désactivée`;
           }
 
-          timer.unsubscribe();
+          this.timerForWaitingChaudiereResponse.unsubscribe();
           this.responseChaudiereSub.unsubscribe();
           this.processingOrder = false;
           this.waitingForResponse = false;
@@ -144,9 +171,37 @@ export class ControllerComponent implements OnInit, OnDestroy {
   }
 
 
+  private lock() {
+    this.timerLockFinish = false;
+    this.store.setLockThermostat(true);
+    this.store.setThermostatActivated(false);
+    this.store.setDisjoncteur(false);
+
+    const timer = interval(1000).pipe(
+      tap(s => {
+        console.log(`lock waiting : ${s}`);
+        this.waitingLockTimer = 10 - s;
+        if (s == this.timerNoResponseInSeconds) {
+          timer.unsubscribe();
+          this.timerLockFinish = true;
+          this.tryToUnlock();
+        }
+      })
+    ).subscribe();    
+  }
+
+  private tryToUnlock() {
+    if (this.isLock && this.timerLockFinish && this.disjoncteurState) {
+      this.store.setLockThermostat(false);
+    }
+  }
+
+
   ngOnDestroy(): void {
     this.temperatureSub.unsubscribe();
     this.thermostatValueSub.unsubscribe();
     this.thermostatActivatedSub.unsubscribe();
+    this.lockSub.unsubscribe(); 
+    this.disjoncteurSub.unsubscribe();
   }
 }

@@ -12,13 +12,20 @@ export class ThermostatComponent implements OnInit, OnDestroy {
   value!: number;
   isActivated: boolean = false;
 
-  isActivatedSubscription!: Subscription;
+  isActivatedSub!: Subscription;
+
+  isLock: boolean = false;
+  lockSub!: Subscription;
 
   constructor(private store: StoreService) { }
 
   ngOnInit(): void {
-    this.isActivatedSubscription = this.store.thermostatActivated$.pipe(
+    this.isActivatedSub = this.store.thermostatActivated$.pipe(
       tap(value => this.isActivated = value)
+    ).subscribe();
+
+    this.lockSub = this.store.lockThermostat$.pipe(
+      tap(value => this.isLock = value)
     ).subscribe();
   }
 
@@ -35,6 +42,7 @@ export class ThermostatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.isActivatedSubscription.unsubscribe();    
+    this.isActivatedSub.unsubscribe();
+    this.lockSub.unsubscribe(); 
   }
 }
