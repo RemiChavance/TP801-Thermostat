@@ -1,1 +1,9 @@
-<p>controller works!</p>
+<h3>Controller</h3>
+<p>Ordre sur la chaudiere : {{ order }}</p>
+
+<div *ngIf="waitingForResponse">
+    <p>En attente d'une réponse de la chaudière ...</p>
+    <p>{{ waitingTimer }} secondes</p>
+</div>
+
+<p *ngIf="!waitingForResponse">Retour de la chaudiere : {{ responseChaudiere }}</p>

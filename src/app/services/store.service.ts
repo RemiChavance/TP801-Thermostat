@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable, interval, tap } from 'rxjs';
 })
 export class StoreService {
 
-  private temperature = new BehaviorSubject<number>(35);
+  private temperature = new BehaviorSubject<number>(20);
   temperature$: Observable<number> = this.temperature.asObservable();
 
 
@@ -41,10 +41,6 @@ export class StoreService {
     return this.temperature.value;
   }
 
-  createResquestChaudiere(state: boolean) {
-    this.requestChaudiere.next(state);
-  }
-
   setDisjoncteur(state: boolean) {
     this.disjoncteur.next(state);
   }
@@ -55,5 +51,14 @@ export class StoreService {
 
   setThermostatValue(value: number) {
     this.thermostatValue.next(value);
+  }
+
+
+  createResquestChaudiere(state: boolean) {
+    this.requestChaudiere.next(state);
+  }
+
+  setResponseChaudiere(state: boolean) {
+    this.responseStartChaudiere.next(state);
   }
 }

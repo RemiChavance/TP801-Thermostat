@@ -25,25 +25,27 @@ export class ChaudiereComponent implements OnInit, OnDestroy {
 
     this.requestSub = this.store.requestChaudiere$.pipe(
       tap(value => {
-        console.log(`chaudiere run : ${value}`);
-        //if (value) this.start();
-      }),
-      tap(value => {
+        console.log(`request received by the chaudiere : ${value ? 'ENABLE' : 'DISABLE'}`);
         if (!value) {
           this.stop();
           return;
         }
+        this.receiveStartOrder();        
+      })
+    ).subscribe();
+  }
 
-        const timer = interval(1000).pipe(
-          tap(s => {
-            console.log(s);
-            const itWorks = this.getRandomSeconds();
-            if (s == itWorks) {
-              this.start();
-              timer.unsubscribe();
-            }
-          })
-        ).subscribe();
+  private receiveStartOrder() {
+    const secondsTillResponse = this.getRandomSeconds();
+    console.log(`will start at ${secondsTillResponse}`);
+
+    const timer = interval(1000).pipe(
+      tap(s => {
+        console.log(s);
+        if (s == secondsTillResponse) {
+          this.start();
+          timer.unsubscribe();
+        }
       })
     ).subscribe();
   }
@@ -52,6 +54,7 @@ export class ChaudiereComponent implements OnInit, OnDestroy {
     this.runStateSub = this.runState.subscribe();
     this.isRunning = true;
     console.log('start !');
+    this.store.setResponseChaudiere(true);
   }
 
   private stop() {
