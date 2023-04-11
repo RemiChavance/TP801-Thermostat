@@ -9,6 +9,7 @@ import { ControllerComponent } from './components/controller/controller.componen
 import { ChaudiereComponent } from './components/chaudiere/chaudiere.component';
 import { DisjoncteurComponent } from './components/disjoncteur/disjoncteur.component';
 import { ThermometreComponent } from './components/thermometre/thermometre.component';
+import { ProgramComponent } from './components/program/program.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { ThermometreComponent } from './components/thermometre/thermometre.compo
     ControllerComponent,
     ChaudiereComponent,
     DisjoncteurComponent,
-    ThermometreComponent
+    ThermometreComponent,
+    ProgramComponent
   ],
   imports: [
     BrowserModule,

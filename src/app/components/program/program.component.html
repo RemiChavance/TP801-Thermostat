@@ -1,0 +1,14 @@
+<h3>Mode Programmé</h3>
+
+<div>
+    <input type="time" id="start" name="start" min="00:00" max="23:59" required [(ngModel)]="startTime" [readonly]="isRunning">
+    <small>Heure de démarrage</small>
+</div>
+<div>
+    <input type="time" id="start" name="start" min="00:00" max="23:59" required [(ngModel)]="stopTime" [readonly]="isRunning">
+    <small>Heure d'arrêt</small>
+</div>
+
+<button (click)="onValidate()" [disabled]="isRunning">Valider</button>
+
+<p>Etat : {{ state }}</p>
